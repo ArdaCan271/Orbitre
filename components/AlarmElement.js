@@ -4,8 +4,8 @@ import { StyleSheet, StatusBar, Text, View, Button, TouchableOpacity } from 'rea
 export default function AlarmElement(props) {
   return (
     <View style={styles.container}>
-      <Text style={styles.toDoText} adjustsFontSizeToFit>{props.text}</Text>
-      <View style={styles.deleteIcon}><TouchableOpacity onPress={props.onPress}></TouchableOpacity></View>
+      <Text style={styles.toDoText}>{props.dateText}</Text>
+      <Text style={styles.toDoText}>{props.timeText}</Text>
     </View>
   );
 }
@@ -27,7 +27,8 @@ const styles = StyleSheet.create({
   },
   toDoText: {
     fontSize: 16,
-    maxWidth: "90%"
+    maxWidth: "90%",
+    color: "white"
   },
   deleteIcon: {
     height: 35,
