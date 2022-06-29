@@ -55,9 +55,10 @@ const styles = StyleSheet.create({
   reminderText: {
     alignSelf: "flex-start",
     fontSize: 16,
-    maxWidth: "85%",
+    maxWidth: "100%",
+    maxHeight: 40,
     color: "white",
-    marginBottom: 15,
+    marginBottom: 8,
   },
   alarmTextContainer: {
     flexDirection: "row",

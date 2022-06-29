@@ -1,6 +1,6 @@
 import React from 'react';
 import { useEffect, useState } from 'react';
-import { StyleSheet, ScrollView, TouchableOpacity, Text, View, Image, Platform, Button, Modal } from 'react-native';
+import { StyleSheet, Keyboard, Appearance, ScrollView, TouchableOpacity, Text, View, Image, Platform, Button, Modal, TextInput, Pressable } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import PushNotification from 'react-native-push-notification';
 import SweetAlert from 'react-native-sweet-alert';
@@ -105,8 +105,12 @@ export default function WelcomeScreen({navigation}) {
   const [dateText, setDateText] = useState("Empty")
   const [timeText, setTimeText] = useState("Empty")
 
+  const [inputBorderColor, setInputBorderColor] = useState("gray")
+  const [alarmDescription, setAlarmDescription] = useState("")
+  const [modalOpen, setModalOpen] = useState(false)
 
-  const onChange = async (event, selectedDate) => {
+
+  const onChange = (event, selectedDate) => {
     const choosingDate = selectedDate.getTime() > (Date.now() - (new Date().getHours() * 3600000 + 
     new Date().getMinutes() * 60000 + 
     new Date().getSeconds() * 1000))
@@ -149,8 +153,9 @@ export default function WelcomeScreen({navigation}) {
       setDate(new Date())
     }else if(event.type === "dismissed"){
       setShow(false);
-      setDate(new Date())
+      setDate(new Date());
       setMode("date");
+      setAlarmDescription("");
     }
   }
 
@@ -163,7 +168,7 @@ export default function WelcomeScreen({navigation}) {
   const handleNotification = (key, selectedDate, alarmMessage) => {
     PushNotification.localNotificationSchedule({
       channelId: "test-channel",
-      title: "",
+      title: "⏰",
       message: alarmMessage,
       date: new Date(selectedDate),
       allowWhileIdle: true,
@@ -232,15 +237,65 @@ export default function WelcomeScreen({navigation}) {
       setAlarms([...alarms, {key: alarms.length, 
                              notificationId: randomId, 
                              selectedDate: alarmDate, 
-                             alarmMessage: "Go to the dentist."}]);
-      handleNotification(randomId, alarmDate, "Go to the dentist.")
+                             alarmMessage: alarmDescription}]);
+      handleNotification(randomId, alarmDate, alarmDescription);
+      setAlarmDescription("");
     }
   }, [timeText])
 
+  const modalColor = Appearance.getColorScheme() === "dark" ? "#424242" : "white";
+  const inputBGColor = Appearance.getColorScheme() === "dark" ? "#424242" : "white";
+  const inputTextColor = Appearance.getColorScheme() === "dark" ? "white" : "black";
 
+  const handleOKPress = () => {
+    if (alarmDescription !== ""){
+      setModalOpen(false);
+      setInputBorderColor("gray");
+      handleAddAlarmPress();
+    }else{
+      SweetAlert.showAlertWithOptions({
+        title: "",
+        subTitle: 'Please enter an alarm description.',
+        style: 'warning',
+      })
+    }
+  }
 
   return (
     <View style={styles.container}>
+      <Modal visible={modalOpen} transparent={true} animationType="fade">
+        <Pressable 
+        android_disableSound={true}
+        onPress={() => {setModalOpen(false); setAlarmDescription(""); setInputBorderColor("gray")}} 
+        style={{flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: "rgba(0,0,0,0.5)"}}>  
+          <Pressable 
+          android_disableSound={true}
+          style={[styles.modalContainer, {backgroundColor: modalColor}]} 
+          onPress={Keyboard.dismiss}>
+            <TextInput
+              autoFocus
+              onFocus={() => {setInputBorderColor("#80cbc4")}}
+              onPressIn={() => {setInputBorderColor("#80cbc4")}}
+              onEndEditing={() => {setInputBorderColor("gray")}}
+              style={[styles.modalTextInput, {borderColor: inputBorderColor, backgroundColor: inputBGColor, color: inputTextColor}]}
+              placeholder="Enter alarm description"
+              value={alarmDescription}
+              onChangeText={setAlarmDescription}></TextInput>
+            <View style={{flexDirection: "row", width: "100%", justifyContent: "flex-end"}}>
+              <TouchableOpacity 
+                onPress={() => {setModalOpen(false); setAlarmDescription(""); setInputBorderColor("gray")}}
+                style={{marginRight: 30, marginBottom: -18, height: 20, width: 60, justifyContent: "center", alignItems: "center"}}>
+                <Text style={{color: "#80cbc4", fontWeight: "500"}}>CANCEL</Text>
+              </TouchableOpacity>
+              <TouchableOpacity 
+                onPress={handleOKPress}
+                style={{marginRight: 30, marginBottom: -18, height: 20, width: 30, justifyContent: "center", alignItems: "center"}}>
+                <Text style={{color: "#80cbc4", fontWeight: "500"}}>OK</Text>
+              </TouchableOpacity>
+            </View>
+          </Pressable>
+        </Pressable>
+      </Modal>
       <ScrollView contentContainerStyle={{alignItems: "center"}} style={{width: "100%", paddingTop: 15}}>
         {alarms.map((item) => {
           return (
@@ -252,7 +307,7 @@ export default function WelcomeScreen({navigation}) {
           )
         })}
         <View style={separator}/>
-        <TouchableOpacity onPress={handleAddAlarmPress} style={styles.testButton}>
+        <TouchableOpacity onPress={() => setModalOpen(true)} style={styles.testButton}>
           <Text style={styles.testButtonText}>Add Alarm</Text>
         </TouchableOpacity>
         {show && (<DateTimePicker testID='dateTimePicker' value={date} mode={mode} is24Hour onChange={onChange} />)}
@@ -271,6 +326,28 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: "#32474c",
+  },
+  modalContainer: {
+    width: 300,
+    height: 180,
+    justifyContent: "space-around",
+    alignItems: "center",
+    borderRadius: 3,
+  },
+  modalTextInput: {
+    width: '80%',
+    height: 38,
+    fontSize: 16,
+    paddingBottom: 0,
+    paddingTop: 6,
+    borderBottomWidth: 2,
+    borderColor: "gray"
+  },
+  modalOKButton: {
+
+  },
+  modalCancelButton: {
+
   },
   testButton: {
     width: "94%",
