@@ -30,11 +30,6 @@ export default function WelcomeScreen({navigation}) {
   }
 
 
-  useEffect(() => {
-    createChannels();
-  }, [])
-
-
   const handleOnPress = async () => {
     await AsyncStorage.setItem("username", "");
     await AsyncStorage.setItem("password", "");
@@ -91,6 +86,19 @@ export default function WelcomeScreen({navigation}) {
 
   useEffect(() => {
     getData();
+    createChannels();
+    alarms.forEach(alarm => {
+      console.log("alarm" + alarm.key + ": " + alarm.effectDate);
+      const checkDate = new Date(alarm.effectDate)
+      console.log(checkDate);
+      if (checkDate.getTime() < Date.now()){
+        console.log("TRUEE");
+        handleCancelNotification(alarm.notificationId);
+        const newAlarms = [...alarms];
+        newAlarms.splice(alarm.key, 1);
+        setAlarms(newAlarms);
+      }
+    });
   }, [])
 
   
@@ -239,7 +247,8 @@ export default function WelcomeScreen({navigation}) {
         i++;
       }
       
-      setAlarms([...alarms, {date: dateText, time: timeText, key: alarms.length, notificationId: randomId}]);
+      setAlarms([...alarms, {date: dateText, time: timeText, key: alarms.length, notificationId: randomId, effectDate: effectDate}]);
+      console.log(effectDate);
       handleNotification(randomId, effectDate)
     }
   }, [effectRandomNum])
