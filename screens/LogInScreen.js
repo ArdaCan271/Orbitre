@@ -10,8 +10,9 @@ import {
   View,
   Pressable,
   Keyboard,
-  KeyboardAvoidingView,
+  Dimensions,
   Platform,
+  ScrollView,
 } from 'react-native';
 import {useState, useEffect} from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -94,61 +95,63 @@ export default function LogInScreen({navigation}) {
     autoLogin();
   }, []);
 
-  return (
-    <Pressable android_disableSound={true} onPress={Keyboard.dismiss} style={styles.container}>
-      <StatusBar backgroundColor={"#101719"}/>
-      <View style={styles.loginContainer}>
-        <Text style={styles.appName}>ORBITRE</Text>
-        <Image source={require('../assets/app-logo.png')} style={styles.logoImage} resizeMode="contain"/>
-        <View style={styles.usernameBoxContainer}>
-          <Text style={[styles.usernameBoxText, {color: usernameTextColor}]}>Email or username</Text>
-          <TextInput
-            onPressIn={() => {setUsernameTextColor('#2dd2c2'); setUsernameBorderWidth(1);}}
-            onEndEditing={() => {setUsernameTextColor('#1d877c'); setUsernameBorderWidth(0);}}
-            style={[styles.usernameBox, {borderWidth: usernameBorderWidth}]}
-            placeholder="Email or username"
-            value={username}
-            onChangeText={setUsername}></TextInput>
+    return (
+    <ScrollView style={{height: "100%"}}>
+      <Pressable android_disableSound={true} onPress={Keyboard.dismiss} style={styles.container}>
+        <StatusBar backgroundColor={"#101719"}/>
+        <View style={styles.loginContainer}>
+          <Text style={styles.appName}>ORBITRE</Text>
+          <Image source={require('../assets/app-logo.png')} style={styles.logoImage} resizeMode="contain"/>
+          <View style={styles.usernameBoxContainer}>
+            <Text style={[styles.usernameBoxText, {color: usernameTextColor}]}>Email or username</Text>
+            <TextInput
+              onPressIn={() => {setUsernameTextColor('#2dd2c2'); setUsernameBorderWidth(1);}}
+              onEndEditing={() => {setUsernameTextColor('#1d877c'); setUsernameBorderWidth(0);}}
+              style={[styles.usernameBox, {borderWidth: usernameBorderWidth}]}
+              placeholder="Email or username"
+              value={username}
+              onChangeText={setUsername}></TextInput>
+          </View>
+          <View style={styles.passwordBoxContainer}>
+            <Text style={[styles.passwordBoxText, {color: passwordTextColor}]}>Password</Text>
+            <TextInput
+              secureTextEntry={true}
+              onPressIn={() => {setPasswordTextColor('#2dd2c2'); setPasswordBorderWidth(1);}}
+              onEndEditing={() => {setPasswordTextColor('#1d877c'); setPasswordBorderWidth(0);}}
+              style={[styles.passwordBox, {borderWidth: passwordBorderWidth}]}
+              placeholder="Password"
+              value={password}
+              onChangeText={setPassword}
+              textContentType="password"
+              autoCapitalize="none"></TextInput>
+          </View>
+          <TouchableOpacity>
+            <Text style={styles.forgotPassword}>Forgot your password?</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={handleOnPress} style={styles.loginTouchable}>
+            <Text style={styles.loginbuttonText}>Log In</Text>
+          </TouchableOpacity>
         </View>
-        <View style={styles.passwordBoxContainer}>
-          <Text style={[styles.passwordBoxText, {color: passwordTextColor}]}>Password</Text>
-          <TextInput
-            secureTextEntry={true}
-            onPressIn={() => {setPasswordTextColor('#2dd2c2'); setPasswordBorderWidth(1);}}
-            onEndEditing={() => {setPasswordTextColor('#1d877c'); setPasswordBorderWidth(0);}}
-            style={[styles.passwordBox, {borderWidth: passwordBorderWidth}]}
-            placeholder="Password"
-            value={password}
-            onChangeText={setPassword}
-            textContentType="password"
-            autoCapitalize="none"></TextInput>
+        <View style={styles.registerPromptView}>
+          <Text style={styles.registerPrompt}>Don't have an account? </Text>
+          <TouchableOpacity>
+            <Text style={[styles.registerPrompt, {color: '#2dd2c2'}]}>Sign Up</Text>
+          </TouchableOpacity>
         </View>
-        <TouchableOpacity>
-          <Text style={styles.forgotPassword}>Forgot your password?</Text>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={handleOnPress} style={styles.loginTouchable}>
-          <Text style={styles.loginbuttonText}>Log In</Text>
-        </TouchableOpacity>
-      </View>
-      <View style={styles.registerPromptView}>
-        <Text style={styles.registerPrompt}>Don't have an account? </Text>
-        <TouchableOpacity>
-          <Text style={[styles.registerPrompt, {color: '#2dd2c2'}]}>Sign Up</Text>
-        </TouchableOpacity>
-      </View>
-    </Pressable>
+      </Pressable>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    height: Dimensions.get("window").height - StatusBar.currentHeight,
     justifyContent: 'space-between',
     alignItems: 'center',
     backgroundColor: '#202e32',
   },
   loginContainer: {
-    flex: 1,
     width: "100%",
     justifyContent: 'flex-start',
     alignItems: 'center',

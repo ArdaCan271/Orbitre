@@ -246,6 +246,7 @@ export default function WelcomeScreen({navigation}) {
   const modalColor = Appearance.getColorScheme() === "dark" ? "#424242" : "white";
   const inputBGColor = Appearance.getColorScheme() === "dark" ? "#424242" : "white";
   const inputTextColor = Appearance.getColorScheme() === "dark" ? "white" : "black";
+  const accentColor = Appearance.getColorScheme() === "dark" ? "#80cbc4" : "#008577";
 
   const handleOKPress = () => {
     if (alarmDescription !== ""){
@@ -274,8 +275,8 @@ export default function WelcomeScreen({navigation}) {
           onPress={Keyboard.dismiss}>
             <TextInput
               autoFocus
-              onFocus={() => {setInputBorderColor("#80cbc4")}}
-              onPressIn={() => {setInputBorderColor("#80cbc4")}}
+              onFocus={() => {setInputBorderColor(accentColor)}}
+              onPressIn={() => {setInputBorderColor(accentColor)}}
               onEndEditing={() => {setInputBorderColor("gray")}}
               style={[styles.modalTextInput, {borderColor: inputBorderColor, backgroundColor: inputBGColor, color: inputTextColor}]}
               placeholder="Enter alarm description"
@@ -285,12 +286,12 @@ export default function WelcomeScreen({navigation}) {
               <TouchableOpacity 
                 onPress={() => {setModalOpen(false); setAlarmDescription(""); setInputBorderColor("gray")}}
                 style={{marginRight: 30, marginBottom: -18, height: 20, width: 60, justifyContent: "center", alignItems: "center"}}>
-                <Text style={{color: "#80cbc4", fontWeight: "500"}}>CANCEL</Text>
+                <Text style={{color: accentColor, fontWeight: "500"}}>CANCEL</Text>
               </TouchableOpacity>
               <TouchableOpacity 
                 onPress={handleOKPress}
                 style={{marginRight: 30, marginBottom: -18, height: 20, width: 30, justifyContent: "center", alignItems: "center"}}>
-                <Text style={{color: "#80cbc4", fontWeight: "500"}}>OK</Text>
+                <Text style={{color: accentColor, fontWeight: "500"}}>OK</Text>
               </TouchableOpacity>
             </View>
           </Pressable>
@@ -312,7 +313,6 @@ export default function WelcomeScreen({navigation}) {
         </TouchableOpacity>
         {show && (<DateTimePicker testID='dateTimePicker' value={date} mode={mode} is24Hour onChange={onChange} />)}
         <View style={{width: "100%", height: 175}}/>
-        
       </ScrollView>
     </View>
   );
@@ -342,12 +342,6 @@ const styles = StyleSheet.create({
     paddingTop: 6,
     borderBottomWidth: 2,
     borderColor: "gray"
-  },
-  modalOKButton: {
-
-  },
-  modalCancelButton: {
-
   },
   testButton: {
     width: "94%",
