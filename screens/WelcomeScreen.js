@@ -21,15 +21,19 @@ export default function WelcomeScreen({navigation}) {
     }
   }
 
+
   const createChannels = () => {
     PushNotification.createChannel({
       channelId: "test-channel",
       channelName: "Test Channel"
     })
   }
+
+
   useEffect(() => {
     createChannels();
   }, [])
+
 
   const handleOnPress = async () => {
     await AsyncStorage.setItem("username", "");
@@ -37,6 +41,7 @@ export default function WelcomeScreen({navigation}) {
 
     navigation.goBack()
   }
+
 
   useEffect(() => {
     navigation.setOptions({
@@ -81,13 +86,14 @@ export default function WelcomeScreen({navigation}) {
   }, [navigation]);
 
 
-
   const [alarms, setAlarms] = useState([])
+
 
   useEffect(() => {
     getData();
   }, [])
 
+  
   useEffect(() => {
     async function storeItems(){
       const stringifiedAlarms = JSON.stringify(alarms);
@@ -104,13 +110,7 @@ export default function WelcomeScreen({navigation}) {
   const [show, setShow] = useState(false);
   const [dateText, setDateText] = useState("Empty")
   const [timeText, setTimeText] = useState("Empty")
-
-
-  useEffect(() => {
-    if (mode === "time" && effectDate > Date.now() && effectType === "set" && timeText !== "Empty"){
-      setAlarms([...alarms, {date: dateText, time: timeText, key: `${Math.floor(Math.random() * 300)}`}]);
-    }
-  }, [timeText])
+  const [effectRandomNum, setEffectRandomNum] = useState(1)
 
 
   const onChange = async (event, selectedDate) => {
@@ -119,8 +119,6 @@ export default function WelcomeScreen({navigation}) {
     new Date().getSeconds() * 1000))
 
     const choosingTime = selectedDate.getTime() > Date.now();
-
-    console.log(selectedDate);
 
     if ((mode === "date" ? choosingDate : choosingTime) && event.type === "set"){
       setShow(false);
@@ -136,8 +134,6 @@ export default function WelcomeScreen({navigation}) {
     
       let fTime = (tempDate.getHours() < 10 ? "0" + tempDate.getHours() : tempDate.getHours()) + 
       ":" + (tempDate.getMinutes() < 10 ? "0" + tempDate.getMinutes() : tempDate.getMinutes());
-      // console.log(fTime);
-      // console.log(timeText);
 
       if (mode === "date"){
         setDate(currentDate);
@@ -148,6 +144,7 @@ export default function WelcomeScreen({navigation}) {
         setEffectDate(currentDate);
         setEffectType(event.type);
         setTimeText(fTime);
+        setEffectRandomNum(Math.floor(Math.random() * 10000))
       }
     }else if (selectedDate < Date.now() && event.type === "set"){
       setShow(false);
@@ -167,9 +164,6 @@ export default function WelcomeScreen({navigation}) {
       setTimeText("Empty");
       setMode("date");
     }
-    // if (event.type === "set" && mode === "time" && selectedDate.getTime() > Date.now()){
-      
-    // }
   }
 
   const showMode = (currentMode) => {
@@ -178,39 +172,77 @@ export default function WelcomeScreen({navigation}) {
   }
 
 
-  // const handleNotification = () => {
-  //   PushNotification.localNotificationSchedule({
-  //     channelId: "test-channel",
-  //     title: "ALARM",
-  //     message: "TEST",
-  //     date: new Date(Date.now() + 5 * 1000),
-  //     allowWhileIdle: true,
-  //     id: 1
-  //   });
-  // }
+  const handleNotification = (key, selectedDate) => {
+    PushNotification.localNotificationSchedule({
+      channelId: "test-channel",
+      title: "ALARM",
+      message: "TEST",
+      date: new Date(selectedDate),
+      allowWhileIdle: true,
+      id: key
+    });
 
-  // const handleCancelNotification = () => {
-  //   PushNotification.cancelLocalNotification("1");
-  // }
+  }
+
+
+  const handleCancelNotification = (notificationID) => {
+    PushNotification.cancelLocalNotification(notificationID.toString());
+  }
+
 
   const handleAddAlarmPress = () => {
     showMode("date");
     setDate(new Date());
   }
 
-  const handleDelPress = (index) => {
-    const newAlarms = [...alarms]
-    newAlarms.splice(index, 1)
-    setAlarms(newAlarms)
+
+  const handleDelPress = (index, notificationId) => {
+    handleCancelNotification(notificationId);
+    const newAlarms = [...alarms];
+    newAlarms.splice(index, 1);
+    setAlarms(newAlarms);
   }
   
+
   const [separator, setSeparator] = useState({})
 
+
   useEffect(() => {
+    let alarmIndex = 0;
+    while (alarmIndex < alarms.length){
+      alarms[alarmIndex].key = alarmIndex;
+      alarmIndex++;
+    }
+
     if (alarms.length !== 0){
       setSeparator({width: "80%", borderBottomWidth: 1, borderColor: "darkgray", marginBottom: 15})
     }
   },[alarms.length])
+
+
+  useEffect(() => {
+    if (mode === "time" && effectDate > Date.now() && effectType === "set" && timeText !== "Empty"){
+
+      let randomId = Math.floor(Math.random() * 1000) + 1;
+      let i = 0;
+      while(i < alarms.length){
+        if (randomId === alarms[i].notificationId){
+          randomId = Math.floor(Math.random() * 1000) + 1;
+          i = 0;
+          continue;
+        }
+
+        if (i === alarms.length - 1){
+          break;
+        }
+
+        i++;
+      }
+      
+      setAlarms([...alarms, {date: dateText, time: timeText, key: alarms.length, notificationId: randomId}]);
+      handleNotification(randomId, effectDate)
+    }
+  }, [effectRandomNum])
 
 
 
@@ -219,16 +251,17 @@ export default function WelcomeScreen({navigation}) {
       <ScrollView contentContainerStyle={{alignItems: "center"}} style={{width: "100%", paddingTop: 15}}>
         {alarms.map((item) => {
           return (
-            <AlarmElement key={item.key} dateText={item.date} timeText={item.time}/>
+            <AlarmElement 
+              key={item.key} 
+              dateText={item.date} 
+              timeText={item.time} 
+              onDelPress={() => {handleDelPress(item.key, item.notificationId)}}/>
           )
         })}
         <View style={separator}/>
-        <Text style={{fontWeight: "bold", fontSize: 20, color: "white"}}>{dateText}</Text>
-        <Text style={{fontWeight: "bold", fontSize: 20, color: "white"}}>{timeText}</Text>
         <TouchableOpacity onPress={handleAddAlarmPress} style={styles.testButton}>
           <Text style={styles.testButtonText}>Add Alarm</Text>
         </TouchableOpacity>
-        <Button title="delete" onPress={() => {handleDelPress(0)}}/>
         {show && (<DateTimePicker testID='dateTimePicker' value={date} mode={mode} is24Hour onChange={onChange} />)}
         <View style={{width: "100%", height: 175}}/>
         

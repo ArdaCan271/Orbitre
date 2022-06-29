@@ -6,6 +6,7 @@ export default function AlarmElement(props) {
     <View style={styles.container}>
       <Text style={styles.toDoText}>{props.dateText}</Text>
       <Text style={styles.toDoText}>{props.timeText}</Text>
+      <Button title='delete alarm' onPress={props.onDelPress}/>
     </View>
   );
 }
