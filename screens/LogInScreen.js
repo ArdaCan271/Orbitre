@@ -96,7 +96,7 @@ export default function LogInScreen({navigation}) {
 
   return (
     <Pressable android_disableSound={true} onPress={Keyboard.dismiss} style={styles.container}>
-      <StatusBar hidden />
+      <StatusBar backgroundColor={"#101719"}/>
       <View style={styles.loginContainer}>
         <Text style={styles.appName}>ORBITRE</Text>
         <Image source={require('../assets/app-logo.png')} style={styles.logoImage} resizeMode="contain"/>

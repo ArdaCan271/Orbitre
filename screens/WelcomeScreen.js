@@ -1,6 +1,6 @@
 import React from 'react';
 import { useEffect, useState } from 'react';
-import { StyleSheet, ScrollView, TouchableOpacity, Text, View, Image, Platform, Button } from 'react-native';
+import { StyleSheet, ScrollView, TouchableOpacity, Text, View, Image, Platform, Button, Modal } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import PushNotification from 'react-native-push-notification';
 import SweetAlert from 'react-native-sweet-alert';
@@ -42,15 +42,14 @@ export default function WelcomeScreen({navigation}) {
     navigation.setOptions({
       header: () => (
         <View style={{
-          height: 80,
+          height: 65,
           width: "100%",
           backgroundColor: "#202e32",
           flexDirection: "row",
           justifyContent: "space-between",
-          alignItems: "flex-end",
+          alignItems: "center",
           }}>
           <Text style={{
-            marginBottom: 10,
             marginLeft: 20,
             fontSize: 30,
             color: "cyan",
@@ -69,7 +68,6 @@ export default function WelcomeScreen({navigation}) {
             backgroundColor: "#dc5866",
             justifyContent: "center",
             alignItems: "center",
-            marginBottom: 11,
             marginRight: 10,
             borderRadius: 12,
           }}>
@@ -87,18 +85,6 @@ export default function WelcomeScreen({navigation}) {
   useEffect(() => {
     getData();
     createChannels();
-    alarms.forEach(alarm => {
-      console.log("alarm" + alarm.key + ": " + alarm.effectDate);
-      const checkDate = new Date(alarm.effectDate)
-      console.log(checkDate);
-      if (checkDate.getTime() < Date.now()){
-        console.log("TRUEE");
-        handleCancelNotification(alarm.notificationId);
-        const newAlarms = [...alarms];
-        newAlarms.splice(alarm.key, 1);
-        setAlarms(newAlarms);
-      }
-    });
   }, [])
 
   
@@ -113,12 +99,11 @@ export default function WelcomeScreen({navigation}) {
 
   const [date, setDate] = useState(new Date(Date.now()));
   const [mode, setMode] = useState("date");
-  const [effectDate, setEffectDate] = useState();
+  const [selectedDate, setSelectedDate] = useState();
   const [effectType, setEffectType] = useState("");
   const [show, setShow] = useState(false);
   const [dateText, setDateText] = useState("Empty")
   const [timeText, setTimeText] = useState("Empty")
-  const [effectRandomNum, setEffectRandomNum] = useState(1)
 
 
   const onChange = async (event, selectedDate) => {
@@ -149,10 +134,9 @@ export default function WelcomeScreen({navigation}) {
       }
 
       if (mode === "time"){
-        setEffectDate(currentDate);
+        setSelectedDate(currentDate);
         setEffectType(event.type);
         setTimeText(fTime);
-        setEffectRandomNum(Math.floor(Math.random() * 10000))
       }
     }else if (selectedDate < Date.now() && event.type === "set"){
       setShow(false);
@@ -163,13 +147,9 @@ export default function WelcomeScreen({navigation}) {
       });
       setMode("date");
       setDate(new Date())
-      setDateText("Empty");
-      setTimeText("Empty");
     }else if(event.type === "dismissed"){
       setShow(false);
       setDate(new Date())
-      setDateText("Empty");
-      setTimeText("Empty");
       setMode("date");
     }
   }
@@ -180,11 +160,11 @@ export default function WelcomeScreen({navigation}) {
   }
 
 
-  const handleNotification = (key, selectedDate) => {
+  const handleNotification = (key, selectedDate, alarmMessage) => {
     PushNotification.localNotificationSchedule({
       channelId: "test-channel",
-      title: "ALARM",
-      message: "TEST",
+      title: "",
+      message: alarmMessage,
       date: new Date(selectedDate),
       allowWhileIdle: true,
       id: key
@@ -224,12 +204,14 @@ export default function WelcomeScreen({navigation}) {
 
     if (alarms.length !== 0){
       setSeparator({width: "80%", borderBottomWidth: 1, borderColor: "darkgray", marginBottom: 15})
+    }else{
+      setSeparator({})
     }
   },[alarms.length])
 
 
   useEffect(() => {
-    if (mode === "time" && effectDate > Date.now() && effectType === "set" && timeText !== "Empty"){
+    if (mode === "time" && selectedDate > Date.now() && effectType === "set" && timeText !== "Empty"){
 
       let randomId = Math.floor(Math.random() * 1000) + 1;
       let i = 0;
@@ -246,12 +228,14 @@ export default function WelcomeScreen({navigation}) {
 
         i++;
       }
-      
-      setAlarms([...alarms, {date: dateText, time: timeText, key: alarms.length, notificationId: randomId, effectDate: effectDate}]);
-      console.log(effectDate);
-      handleNotification(randomId, effectDate)
+      const alarmDate = new Date(selectedDate.getTime() - (selectedDate.getSeconds() * 1000))
+      setAlarms([...alarms, {key: alarms.length, 
+                             notificationId: randomId, 
+                             selectedDate: alarmDate, 
+                             alarmMessage: "Go to the dentist."}]);
+      handleNotification(randomId, alarmDate, "Go to the dentist.")
     }
-  }, [effectRandomNum])
+  }, [timeText])
 
 
 
@@ -262,9 +246,9 @@ export default function WelcomeScreen({navigation}) {
           return (
             <AlarmElement 
               key={item.key} 
-              dateText={item.date} 
-              timeText={item.time} 
-              onDelPress={() => {handleDelPress(item.key, item.notificationId)}}/>
+              onDelPress={() => {handleDelPress(item.key, item.notificationId)}}
+              selectedDate={item.selectedDate}
+              alarmMessage={item.alarmMessage}/>
           )
         })}
         <View style={separator}/>
