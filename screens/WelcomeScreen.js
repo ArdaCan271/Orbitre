@@ -5,6 +5,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import PushNotification from 'react-native-push-notification';
 import SweetAlert from 'react-native-sweet-alert';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import Icon from 'react-native-vector-icons/AntDesign';
 
 import AlarmElement from '../components/AlarmElement';
 
@@ -309,6 +310,7 @@ export default function WelcomeScreen({navigation}) {
         })}
         <View style={separator}/>
         <TouchableOpacity onPress={() => setModalOpen(true)} style={styles.testButton}>
+          <Icon name="plus" size={36} color="white"/>
           <Text style={styles.testButtonText}>Add Alarm</Text>
         </TouchableOpacity>
         {show && (<DateTimePicker testID='dateTimePicker' value={date} mode={mode} is24Hour onChange={onChange} />)}
@@ -349,6 +351,7 @@ const styles = StyleSheet.create({
     borderWidth: 1.4,
     borderColor: "#c1d3d7",
     backgroundColor: '#47646c',
+    flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
     borderRadius: 12,
@@ -357,6 +360,7 @@ const styles = StyleSheet.create({
   },
   testButtonText: {
     color: "white",
+    marginLeft: 5,
     fontSize: 20,
   },
 });

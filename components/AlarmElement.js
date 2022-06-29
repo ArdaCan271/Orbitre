@@ -1,5 +1,6 @@
 import React from 'react';
 import { StyleSheet, StatusBar, Text, View, Button, TouchableOpacity } from 'react-native';
+import Icon from 'react-native-vector-icons/AntDesign';
 
 export default function AlarmElement(props) {
   let tempDate = new Date(props.selectedDate);
@@ -17,13 +18,15 @@ export default function AlarmElement(props) {
       <View style={styles.textContainer}>
         <Text style={styles.reminderText}>{props.alarmMessage}</Text>
         <View style={styles.alarmTextContainer}>
+          <Icon name='calendar' size={18} color="#c1d3d7"/>
           <Text style={styles.alarmText}>{fDate}</Text>
+          <Icon name='clockcircleo' size={18} color="#c1d3d7"/>
           <Text style={styles.alarmText}>{fTime}</Text>
         </View>
       </View>
-      <View style={styles.delButtonContainer}>
-        <Button title='del' onPress={props.onDelPress}/>
-      </View>
+      <TouchableOpacity style={styles.delButtonContainer} onPress={props.onDelPress}>
+        <Icon name='close' size={35} color="#c1d3d7"/>
+      </TouchableOpacity>
     </View>
   );
 }
@@ -54,9 +57,9 @@ const styles = StyleSheet.create({
   },
   reminderText: {
     alignSelf: "flex-start",
-    fontSize: 16,
+    fontSize: 18,
     maxWidth: "100%",
-    maxHeight: 40,
+    maxHeight: 43,
     color: "white",
     marginBottom: 8,
   },
@@ -69,7 +72,8 @@ const styles = StyleSheet.create({
   alarmText: {
     fontSize: 16,
     color: "white",
-    marginRight: 40,
+    marginRight: 20,
+    marginLeft: 6,
   },
   deleteIcon: {
     position: "absolute",
