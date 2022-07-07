@@ -26,7 +26,9 @@ export default function WelcomeScreen({navigation}) {
   const createChannels = () => {
     PushNotification.createChannel({
       channelId: "test-channel",
-      channelName: "Test Channel"
+      channelName: "Test Channel",
+      playSound: true,
+      soundName: "newalarm.mp3",
     })
   }
 
@@ -151,7 +153,8 @@ export default function WelcomeScreen({navigation}) {
         style: 'warning',
       });
       setMode("date");
-      setDate(new Date())
+      setDate(new Date());
+      setAlarmDescription("");
     }else if(event.type === "dismissed"){
       setShow(false);
       setDate(new Date());
@@ -173,7 +176,9 @@ export default function WelcomeScreen({navigation}) {
       message: alarmMessage,
       date: new Date(selectedDate),
       allowWhileIdle: true,
-      id: key
+      id: key,
+      playSound: true,
+      soundName: "newalarm.mp3"
     });
 
   }
@@ -280,18 +285,19 @@ export default function WelcomeScreen({navigation}) {
               onPressIn={() => {setInputBorderColor(accentColor)}}
               onEndEditing={() => {setInputBorderColor("gray")}}
               style={[styles.modalTextInput, {borderColor: inputBorderColor, backgroundColor: inputBGColor, color: inputTextColor}]}
-              placeholder="Enter alarm description"
+              placeholder="Enter alarm description (max 50 char.)"
+              maxLength={50}
               value={alarmDescription}
               onChangeText={setAlarmDescription}></TextInput>
             <View style={{flexDirection: "row", width: "100%", justifyContent: "flex-end"}}>
               <TouchableOpacity 
                 onPress={() => {setModalOpen(false); setAlarmDescription(""); setInputBorderColor("gray")}}
-                style={{marginRight: 30, marginBottom: -18, height: 20, width: 60, justifyContent: "center", alignItems: "center"}}>
+                style={{marginRight: 30, marginBottom: -18, height: 35, width: 75, justifyContent: "center", alignItems: "center"}}>
                 <Text style={{color: accentColor, fontWeight: "500"}}>CANCEL</Text>
               </TouchableOpacity>
               <TouchableOpacity 
                 onPress={handleOKPress}
-                style={{marginRight: 30, marginBottom: -18, height: 20, width: 30, justifyContent: "center", alignItems: "center"}}>
+                style={{marginRight: 30, marginBottom: -18, height: 35, width: 45, justifyContent: "center", alignItems: "center"}}>
                 <Text style={{color: accentColor, fontWeight: "500"}}>OK</Text>
               </TouchableOpacity>
             </View>
@@ -309,9 +315,9 @@ export default function WelcomeScreen({navigation}) {
           )
         })}
         <View style={separator}/>
-        <TouchableOpacity onPress={() => setModalOpen(true)} style={styles.testButton}>
+        <TouchableOpacity onPress={() => setModalOpen(true)} style={styles.addAlarmButton}>
           <Icon name="plus" size={36} color="white"/>
-          <Text style={styles.testButtonText}>Add Alarm</Text>
+          <Text style={styles.addAlarmButtonText}>Add Alarm</Text>
         </TouchableOpacity>
         {show && (<DateTimePicker testID='dateTimePicker' value={date} mode={mode} is24Hour onChange={onChange} />)}
         <View style={{width: "100%", height: 175}}/>
@@ -330,14 +336,14 @@ const styles = StyleSheet.create({
     backgroundColor: "#32474c",
   },
   modalContainer: {
-    width: 300,
-    height: 180,
+    width: 350,
+    height: 150,
     justifyContent: "space-around",
     alignItems: "center",
     borderRadius: 3,
   },
   modalTextInput: {
-    width: '80%',
+    width: '85%',
     height: 38,
     fontSize: 16,
     paddingBottom: 0,
@@ -345,11 +351,11 @@ const styles = StyleSheet.create({
     borderBottomWidth: 2,
     borderColor: "gray"
   },
-  testButton: {
+  addAlarmButton: {
     width: "94%",
     height: 90,
     borderWidth: 1.4,
-    borderColor: "#c1d3d7",
+    borderColor: "cyan",
     backgroundColor: '#47646c',
     flexDirection: "row",
     justifyContent: "center",
@@ -358,7 +364,7 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     marginBottom: 30,
   },
-  testButtonText: {
+  addAlarmButtonText: {
     color: "white",
     marginLeft: 5,
     fontSize: 20,

@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Orbitre</string>
+    <string name="onesignal_notification_accent_color">FF00FFFF</string>
 </resources>

@@ -16,16 +16,18 @@ export default function AlarmElement(props) {
   return (
     <View style={styles.container}>
       <View style={styles.textContainer}>
-        <Text style={styles.reminderText}>{props.alarmMessage}</Text>
+        <View style={styles.reminderTextContainer}>
+          <Text style={styles.reminderText}>{props.alarmMessage}</Text>
+        </View>
         <View style={styles.alarmTextContainer}>
-          <Icon name='calendar' size={18} color="#c1d3d7"/>
+          <Icon name='calendar' size={18} color="cyan"/>
           <Text style={styles.alarmText}>{fDate}</Text>
-          <Icon name='clockcircleo' size={18} color="#c1d3d7"/>
+          <Icon name='clockcircleo' size={18} color="cyan"/>
           <Text style={styles.alarmText}>{fTime}</Text>
         </View>
       </View>
       <TouchableOpacity style={styles.delButtonContainer} onPress={props.onDelPress}>
-        <Icon name='close' size={35} color="#c1d3d7"/>
+        <Icon name='close' size={35} color="#ff9ea1"/>
       </TouchableOpacity>
     </View>
   );
@@ -38,7 +40,7 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     borderRadius: 12,
     borderWidth: 1.4,
-    borderColor: "#c1d3d7",
+    borderColor: "cyan",
     backgroundColor: '#47646c',
     flexDirection: "row",
     justifyContent: 'space-between',
@@ -55,11 +57,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginRight: 12
   },
-  reminderText: {
+  reminderTextContainer: {
+    flexDirection: "row",
     alignSelf: "flex-start",
-    fontSize: 18,
-    maxWidth: "100%",
-    maxHeight: 43,
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+  },
+  reminderText: {
+    fontSize: 19,
+    maxWidth: "87%",
+    maxHeight: 48,
     color: "white",
     marginBottom: 8,
   },
@@ -74,12 +81,5 @@ const styles = StyleSheet.create({
     color: "white",
     marginRight: 20,
     marginLeft: 6,
-  },
-  deleteIcon: {
-    position: "absolute",
-    height: 45,
-    width: 45,
-    backgroundColor: "tomato",
-    alignSelf: "flex-end",
   }
 });
