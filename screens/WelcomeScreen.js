@@ -6,6 +6,7 @@ import PushNotification from 'react-native-push-notification';
 import SweetAlert from 'react-native-sweet-alert';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import Icon from 'react-native-vector-icons/AntDesign';
+import OneSignal from 'react-native-onesignal';
 
 import AlarmElement from '../components/AlarmElement';
 
@@ -36,8 +37,10 @@ export default function WelcomeScreen({navigation}) {
   const handleOnPress = async () => {
     await AsyncStorage.setItem("username", "");
     await AsyncStorage.setItem("password", "");
+    
+    OneSignal.disablePush(true);
+    navigation.goBack();
 
-    navigation.goBack()
   }
 
 
@@ -178,7 +181,9 @@ export default function WelcomeScreen({navigation}) {
       allowWhileIdle: true,
       id: key,
       playSound: true,
-      soundName: "newalarm.mp3"
+      soundName: "newalarm.mp3",
+      actions: ["Yes", "No"],
+      invokeApp: false,
     });
 
   }
@@ -249,10 +254,12 @@ export default function WelcomeScreen({navigation}) {
     }
   }, [timeText])
 
+
   const modalColor = Appearance.getColorScheme() === "dark" ? "#424242" : "white";
   const inputBGColor = Appearance.getColorScheme() === "dark" ? "#424242" : "white";
   const inputTextColor = Appearance.getColorScheme() === "dark" ? "white" : "black";
   const accentColor = Appearance.getColorScheme() === "dark" ? "#80cbc4" : "#008577";
+
 
   const handleOKPress = () => {
     if (alarmDescription !== ""){
@@ -267,6 +274,7 @@ export default function WelcomeScreen({navigation}) {
       })
     }
   }
+
 
   return (
     <View style={styles.container}>

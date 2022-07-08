@@ -21,6 +21,11 @@
       <meta-data  android:name="com.dieam.reactnativepushnotification.notification_color"
                   android:resource="@color/white"/> <!-- or @android:color/{name} to use a standard color -->
 
+      <!-- Fixes onesignal default icon -->
+      <meta-data android:name="com.onesignal.messaging.default_notification_icon" 
+                  android:resource="@mipmap/ic_stat_onesignal_default" />
+
+
       <receiver android:name="com.dieam.reactnativepushnotification.modules.RNPushNotificationActions" />
       <receiver android:name="com.dieam.reactnativepushnotification.modules.RNPushNotificationPublisher" />
       <receiver android:name="com.dieam.reactnativepushnotification.modules.RNPushNotificationBootEventReceiver"

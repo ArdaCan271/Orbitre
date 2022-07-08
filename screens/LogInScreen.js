@@ -1,7 +1,6 @@
 import React from 'react';
 import {
   StyleSheet,
-  ImageBackground,
   TouchableOpacity,
   StatusBar,
   TextInput,
@@ -11,12 +10,12 @@ import {
   Pressable,
   Keyboard,
   Dimensions,
-  Platform,
   ScrollView,
 } from 'react-native';
 import {useState, useEffect} from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import SweetAlert from 'react-native-sweet-alert';
+import OneSignal from 'react-native-onesignal';
 
 export default function LogInScreen({navigation}) {
   const [username, setUsername] = useState('');
@@ -79,6 +78,7 @@ export default function LogInScreen({navigation}) {
       navigation.navigate('Welcome');
       setUsername('');
       setPassword('');
+      OneSignal.disablePush(false);
     }
     errorMessage();
   };
