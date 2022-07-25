@@ -146,7 +146,7 @@ export default function LogInScreen({navigation}) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    height: Dimensions.get("window").height - StatusBar.currentHeight,
+    height: Dimensions.get("window").height,
     justifyContent: 'space-between',
     alignItems: 'center',
     backgroundColor: '#202e32',
